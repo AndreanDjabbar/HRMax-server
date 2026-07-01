@@ -57,8 +57,8 @@ NODE_ENV === "development"
       })
     );
 
-app.use("/tagihid/api/auth", authRoutes);
-app.use("/tagihid/api/user", userRoutes);
+app.use("/hrmax/api/auth", authRoutes);
+app.use("/hrmax/api/user", userRoutes);
 
 app.use(errorHandler)
 

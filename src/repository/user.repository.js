@@ -7,9 +7,12 @@ class UserRepository {
     await prisma.user_Role.createMany({
       data: [
         { id: 0, name: 'DEVELOPER' },
-        { id: 1, name: 'ADMIN' },
-        { id: 2, name: 'STAFF' },
-        { id: 3, name: 'USER' },
+        { id: 1, name: 'TENANT ADMIN' },
+        { id: 2, name: 'PAYROLL ADMIN' },
+        { id: 3, name: 'HR ADMIN' },
+        { id: 4, name: 'REGIONAL VP' },
+        { id: 5, name: 'BRANCH MANAGER' },
+        { id: 6, name: 'STAFF' },
       ],
       skipDuplicates: true,
     });

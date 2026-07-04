@@ -35,7 +35,8 @@
     "postgres": "^3.4.7",
     "rate-limit-redis": "^5.0.0",
     "winston": "^3.17.0",
-    "winston-daily-rotate-file": "^5.0.0"
+    "winston-daily-rotate-file": "^5.0.0",
+    "world-countries": "^5.1.0"
   },
   "devDependencies": {
     "cross-env": "^10.1.0",

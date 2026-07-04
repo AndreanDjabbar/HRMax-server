@@ -4,11 +4,13 @@ export const registerSchema = Joi.object({
     name: Joi
     .string()
     .min(3)
+    .max(60)
     .required()
     .messages({
         'string.base': 'Name must be a string',
         'string.empty': 'Name is required',
         'string.min': 'Name should have a minimum length of {#limit}',
+        'string.max': 'Name should have a maximum length of {#limit}',
         'any.required': 'Name is required',
     }),
     email: Joi.string().email().required()
@@ -34,7 +36,39 @@ export const registerSchema = Joi.object({
         'any.only': 'Confirm Password does not match',
         'any.required': 'Confirm Password is required',
     }),
-}) 
+    phoneInformation: Joi.object({
+        countryCode: Joi
+        .string()
+        .min(1)
+        .max(5)
+        .required()
+        .messages({
+            'string.base': 'Country Code must be a string',
+            'string.empty': 'Country Code is required',
+            'string.min': 'Country Code should have a minimum length of {#limit}',
+            'string.max': 'Country Code should have a maximum length of {#limit}',
+            'any.required': 'Country Code is required',
+        }),
+        phoneNumber: Joi
+        .string()
+        .min(5)
+        .max(15)
+        .required()
+        .messages({
+            'string.base': 'Phone Number must be a string',
+            'string.empty': 'Phone Number is required',
+            'string.min': 'Phone Number should have a minimum length of {#limit}',
+            'string.max': 'Phone Number should have a maximum length of {#limit}',
+            'any.required': 'Phone Number is required',
+        }),
+    })
+    .required()
+    .messages({
+        'object.base': 'Phone Information must be an object',
+        'object.empty': 'Phone Information is required',
+        'any.required': 'Phone Information is required',
+    }),
+})
 
 export const loginSchema = Joi.object({
     email: Joi.string().email().required()

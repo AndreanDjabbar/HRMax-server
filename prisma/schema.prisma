@@ -25,10 +25,23 @@ model User {
   created_at    DateTime    @default(now())
   updated_at    DateTime    @updatedAt
   role          User_Role         @relation(fields: [role_id], references: [id])
+
+  @@map("user")
 }
 
 model User_Role {
   id        Int    @id @default(autoincrement())
   name String
   users     User[]
+
+  @@map("user_role")
+}
+
+model Countries {
+  id        Int    @id @default(autoincrement())
+  iso_code  String @unique @db.VarChar(2)
+  name      String @db.VarChar(100)
+  dial_code String @db.VarChar(10)
+
+  @@map("countries")
 }

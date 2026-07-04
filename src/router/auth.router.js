@@ -37,24 +37,18 @@ router.post(
     catchAsync(registerController)
 );
 router.post(
-    "/login", 
-    authLimiter(10, 6, "login"),
-    timeout('2s'),
-    validateSchema(loginSchema),
-    catchAsync(loginController)
-);
-router.post(
-    "/verify/register-token", 
-    authLimiter(10, 6, "verify_register_token"),
-    timeout('5s'),
-    catchAsync(verifyRegisterTokenController)
-);
-router.post(
     "/verify/register-otp", 
     authLimiter(10, 6, "verify_register_otp"),
     timeout('5s'),
     validateSchema(registerOTPCodeSchema), 
     catchAsync(verifyRegisterOtpController)
+);
+router.post(
+    "/login", 
+    authLimiter(10, 6, "login"),
+    timeout('2s'),
+    validateSchema(loginSchema),
+    catchAsync(loginController)
 );
 router.post(
     "/forgot-password/email-verification", 

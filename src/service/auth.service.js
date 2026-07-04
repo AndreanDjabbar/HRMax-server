@@ -79,7 +79,12 @@ class AuthService {
             error.statusCode = 400;
             throw error;
         }
-
+        const existingUser = await UserRepository.getUserByEmail(email);
+        if (existingUser) {
+            const error = new Error("User with this email already exists, please use a different email or login.");
+            error.statusCode = 400;
+            throw error;
+        }
         let newUser = null;
 
         try {
@@ -117,6 +122,28 @@ class AuthService {
         }
     }
 
+        static async verifyRegisterOtp(email, otpCode) {
+        const user = await UserRepository.getUserByEmail(email);
+        if(!user) {
+            const error = new Error("User not found");
+            error.statusCode = 404;
+            throw error;
+        }
+        if(user.is_verified) {
+            const error = new Error("User is already verified");
+            error.statusCode = 400;
+            throw error;
+        }
+        const verificationResult = await auth.api.verifyEmailOTP({
+        body: { 
+            email: email, 
+            otp: otpCode
+            }
+        });
+        await UserRepository.verifiedUserByID(user.id);
+        return user;
+    }
+
     static async verifyRegisterToken(token, email) {
         const user = await UserRepository.getByEmail(email);
         if (!user) {
@@ -133,40 +160,6 @@ class AuthService {
             error.statusCode = 400;
             throw error;
         }
-        return user;
-    }
-
-    static async verifyRegisterOtp(token, email, otpCode) {
-        const user = await UserRepository.getByEmail(email);
-        if (!user) {
-            const error = new Error("User not found");
-            error.statusCode = 404;
-            throw error;
-        }
-        const redisKey = `emailVerification:${user.id}`;
-        const redisClient = await getRedisClient();
-        const cachedData = await redisClient.hgetall(redisKey);
-
-        if(!cachedData || Object.keys(cachedData).length === 0) {
-            const error = new Error("OTP has expired or is invalid");
-            error.statusCode = 400;
-            throw error;
-        }
-
-        if(cachedData.otpCode !== otpCode) {
-            const error = new Error("Invalid OTP code");
-            error.statusCode = 400;
-            throw error;
-        }
-
-        if (token !== cachedData.emailVerificationToken) {
-            const error = new Error("Invalid or expired token");
-            error.statusCode = 400;
-            throw error;
-        }
-
-        await UserRepository.updateUser(user.id, { is_verified: true });
-        await redisClient.del(redisKey);
         return user;
     }
 

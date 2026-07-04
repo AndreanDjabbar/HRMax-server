@@ -26,6 +26,20 @@ export const registerController = async (req, res) => {
     return responseError(res, 400, e.message, "error", e.message);
   }
 };
+
+export const verifyRegisterOtpController = async (req, res) => {
+  const { email, otpCode } = req.body;
+  const result = await AuthService.verifyRegisterOtp(email, otpCode);
+  return responseSuccess(
+    res,
+    200,
+    `OTP verification successful..Welcome to HRMax and please login to your account, ${result.name}`,
+    "data",
+    {
+      name: result.name,
+    }
+  );
+};
   
 export const loginController = async (req, res) => {
   const { email, password } = req.body;
@@ -54,21 +68,6 @@ export const verifyRegisterTokenController = async (req, res) => {
     name: result.name,
     email: result.email,
   });
-};
-
-export const verifyRegisterOtpController = async (req, res) => {
-  const { otpCode } = req.body;
-  const { email, token } = req.query;
-  const result = await AuthService.verifyRegisterOtp(token, email, otpCode);
-  return responseSuccess(
-    res,
-    200,
-    `OTP verification successful..Welcome to DineHub, ${result.name}`,
-    "data",
-    {
-      name: result.name,
-    }
-  );
 };
 
 export const forgotPasswordEmailVerificationController = async (req, res) => {

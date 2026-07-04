@@ -20,6 +20,12 @@ class UserRepository {
     });
   }
 
+  static async getUserByEmail(email) {
+    return await prisma.user.findUnique({
+      where: { email },
+    });
+  }
+
   static async createUserProfile(userId, {
     profileImage=null,
     phoneCountryID,
@@ -32,6 +38,13 @@ class UserRepository {
         phone_country_id: phoneCountryID,
         phone_number: phoneNumber,
       },
+    });
+  }
+
+  static async verifiedUserByID(userId) {
+    return await prisma.user.update({
+      where: { id: userId },
+      data: { is_verified: true },
     });
   }
 

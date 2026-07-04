@@ -19,14 +19,25 @@ model User {
   name          String
   email         String      @unique
   password      String
-  phone         String      @unique
   role_id       Int       @default(3)
   is_verified   Boolean     @default(false)
   created_at    DateTime    @default(now())
   updated_at    DateTime    @updatedAt
   role          User_Role         @relation(fields: [role_id], references: [id])
+  profile      User_Profile?
 
   @@map("user")
+}
+
+model User_Profile {
+  id            Int       @id @default(autoincrement())
+  user_id       String    @unique 
+  profile_image String?   
+  phone_country_id   Int
+  phone_number      String    
+  user              User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("user_profile")
 }
 
 model User_Role {

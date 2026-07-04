@@ -3,6 +3,8 @@ import { generateOTPNumber, generateRandomToken, sendResetPasswordEmail, sendVer
 import { getRedisClient } from "../config/redis.config.js";
 import { generateJWTToken, verifyToken } from "../util/jwt.util.js";
 import UserRepository from "../repository/user.repository.js";
+import MasterRepository from "../repository/master.repository.js";
+import { auth } from "../util/auth.util.js";
 
 class AuthService {
     static async login(email, password) {
@@ -68,38 +70,51 @@ class AuthService {
         };
     }
 
-    static async register(name, email, password) {
-        const existingUser = await UserRepository.getByEmail(email);
-        if (existingUser) {
-            const error = new Error("Email already in use");
-            error.statusCode = 409;
+    static async register(name, email, password, phoneInformation) {
+        const { countryCode, phoneNumber } = phoneInformation || {};
+
+        const existingCountry = await MasterRepository.getCountryByCountryCode(countryCode);
+        if (!existingCountry) {
+            const error = new Error("Invalid country code");
+            error.statusCode = 400;
             throw error;
         }
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = await UserRepository.create({
-            name,
-            email,
-            password: hashedPassword,
-            role: "USER",
-            restaurant_id: restaurantId
-        });
-        const otpCode = generateOTPNumber();
-        const emailVerificationToken = generateRandomToken(100);
-        const redisKey = `emailVerification:${newUser.id}`;
 
-        const redisClient = await getRedisClient();
-        await redisClient.del(redisKey);
-        await redisClient.hset(redisKey, {
-            otpCode,
-            emailVerificationToken
-        });
-        await redisClient.expire(redisKey, 5 * 60);
+        let newUser = null;
 
-        sendVerificationEmail(email, emailVerificationToken, otpCode);
-        return {
-            user: newUser,
-            token: emailVerificationToken
-        };
+        try {
+            const registerResult = await auth.api.signUpEmail({
+                body: {
+                    email: email,
+                    password: password,
+                    name: name,
+                }
+            })
+            newUser = registerResult.user;
+
+            const userProfile = await UserRepository.createUserProfile(newUser.id, {
+                profileImage: null,
+                phoneCountryID: existingCountry.id,
+                phoneNumber: phoneNumber,
+            });
+
+            await auth.api.sendVerificationOTP({
+            body: {
+                    email: email,
+                    otp: generateOTPNumber(),
+                    type: "email-verification"
+                }
+            });
+
+            return {
+                user: newUser,
+            }
+        } catch(error) {
+            if (newUser && newUser.id) {
+                await UserRepository.deleteUserbyID(newUser.id);
+            }
+            throw error;
+        }
     }
 
     static async verifyRegisterToken(token, email) {

@@ -19,6 +19,29 @@ class UserRepository {
       skipDuplicates: true,
     });
   }
+
+  static async createUserProfile(userId, {
+    profileImage=null,
+    phoneCountryID,
+    phoneNumber,
+  }) {
+    return await prisma.user_Profile.create({
+      data: {
+        user_id: userId,
+        profile_image: profileImage,
+        phone_country_id: phoneCountryID,
+        phone_number: phoneNumber,
+      },
+    });
+  }
+
+  static async deleteUserbyID(userId) {
+    return await prisma.user.delete({
+      where: {
+        id: userId,
+      },
+    });
+  }
 }
 
 export default UserRepository;

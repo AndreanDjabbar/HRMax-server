@@ -3,9 +3,15 @@ import AuthService from "../service/auth.service.js";
 import { COOKIE_TOKEN_EXPIRES_HOURS, NODE_ENV } from "../util/env.util.js";
 
 export const registerController = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { 
+    name, 
+    email, 
+    password,
+    phoneInformation
+  } = req.body;
+
   try {
-    const {user, token} = await AuthService.register(name, email, password);
+    const {user, token} = await AuthService.register(name, email, password, phoneInformation);
     return responseSuccess(
       res,
       201,

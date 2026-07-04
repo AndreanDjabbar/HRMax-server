@@ -8,6 +8,7 @@ import { getRedisClient } from "./config/redis.config.js";
 import { ALLOWED_ORIGINS, NODE_ENV } from "./util/env.util.js";
 import authRoutes from "./router/auth.router.js";
 import userRoutes from "./router/user.router.js";
+import masterRoutes from "./router/master.router.js";
 import cors from "cors";
 import errorHandler from "./middleware/errorHandler.middleware.js";
 import timeout from "connect-timeout";
@@ -57,6 +58,7 @@ NODE_ENV === "development"
       })
     );
 
+app.use("/hrmax/api/master", masterRoutes);
 app.use("/hrmax/api/auth", authRoutes);
 app.use("/hrmax/api/user", userRoutes);
 

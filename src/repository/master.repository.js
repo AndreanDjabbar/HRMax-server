@@ -37,6 +37,14 @@ class MasterRepository {
             where: { iso_code: countryCode }
         });
     }
+
+    static async getCountries() {
+        return await prisma.countries.findMany({
+            orderBy: {
+                name: 'asc'
+            }
+        });
+    }
 }
 
 export default MasterRepository;

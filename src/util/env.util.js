@@ -20,3 +20,5 @@ export const GLOBAL_RATE_LIMITER_TIME = Number(process.env.GLOBAL_RATE_LIMITER_T
 export const GLOBAL_RATE_LIMITER_REQ = Number(process.env.GLOBAL_RATE_LIMITER_REQ) || 300
 export const COOKIE_TOKEN_EXPIRES_HOURS = Number(process.env.COOKIE_TOKEN_EXPIRES_HOURS) || 24
 export const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(",") : ["http://localhost:5173"];
+export const BETTER_AUTH_SECRET = process.env.BETTER_AUTH_SECRET || "default_better_auth_secret";
+export const SERVER_URL = process.env.SERVER_URL || "http://localhost:4000";

@@ -25,23 +25,22 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-export const sendVerificationEmail = (email, token, otpCode) => {
-    const verificationLink = `${CLIENT_URL}/verify-email?token=${token}&email=${encodeURIComponent(email)}`;
-    const subject = "DineHub Email Verification";
+export const sendVerificationEmail = (email, otpCode) => {
+    const subject = "HRMax Email Verification";
     const body = `
         <html>
         <body>
-            <p>Your OTP Code is: <strong>${otpCode}</strong></p>
+            <p>Please make sure to go back into the OTP verification page and enter the code immediately.</p>
+            <p>Your OTP Code is: <span style="font-size: 27px; letter-spacing: 6px; font-weight: bold;">${otpCode}</span></p>
             <p>Valid for 5 minutes. If you did not request this, ignore this email.</p>
-            <p>Click <a href="${verificationLink}">here</a> to verify your email.</p>
         </body>
         </html>
     `;
     const mailOptions = {
-        from: `"DineHub" <${EMAIL}>`,
+        from: `"HRMax" <${EMAIL}>`,
         to: email,
         subject: subject,
-        text: `Your OTP Code is: ${otpCode}\n\nClick the link to verify your email: ${verificationLink}`,
+        text: `Your OTP Code is: ${otpCode}\nValid for 5 minutes. If you did not request this, ignore this email.`,
         html: body,
     };
     
@@ -52,7 +51,7 @@ export const sendVerificationEmail = (email, token, otpCode) => {
 
 export const sendResetPasswordEmail = (email, token) => {
     const resetLink = `${CLIENT_URL}/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
-    const subject = "DineHub Password Reset";
+    const subject = "HRMax Password Reset";
     const body = `
         <html>
         <body>
@@ -61,7 +60,7 @@ export const sendResetPasswordEmail = (email, token) => {
         </html>
     `
     const mailOptions = {
-        from: `"DineHub" <${EMAIL}>`,
+        from: `"HRMax" <${EMAIL}>`,
         to: email,
         subject: subject,
         text: `Click the link to reset your password: ${resetLink}`,

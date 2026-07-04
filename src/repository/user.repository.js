@@ -8,11 +8,13 @@ class UserRepository {
       data: [
         { id: 0, name: 'DEVELOPER' },
         { id: 1, name: 'TENANT ADMIN' },
-        { id: 2, name: 'PAYROLL ADMIN' },
-        { id: 3, name: 'HR ADMIN' },
-        { id: 4, name: 'REGIONAL VP' },
-        { id: 5, name: 'BRANCH MANAGER' },
-        { id: 6, name: 'STAFF' },
+        { id: 2, name: 'REGIONAL VP' },
+        { id: 3, name: 'PAYROLL ADMIN' },
+        { id: 4, name: 'PAYROLL' },
+        { id: 5, name: 'HR ADMIN' },
+        { id: 6, name: 'HR' },
+        { id: 7, name: 'COMPANY MANAGER' },
+        { id: 8, name: 'STAFF' },
       ],
       skipDuplicates: true,
     });

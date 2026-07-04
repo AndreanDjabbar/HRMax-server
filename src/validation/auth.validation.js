@@ -95,6 +95,13 @@ export const registerOTPCodeSchema = Joi.object({
         'string.length': 'OTP Code must be exactly {#limit} characters',
         'any.required': 'OTP Code is required',
     }),
+    email: Joi.string().email().required()
+    .messages({
+        'string.base': 'Email must be a string',
+        'string.empty': 'Email is required',
+        'string.email': 'Email must be a valid email address',
+        'any.required': 'Email is required',
+    }),
 })
 
 export const forgotPasswordEmailSchema = Joi.object({

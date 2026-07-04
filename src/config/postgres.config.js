@@ -1,4 +1,4 @@
-import logger from "../../logs/logger.js";
+import logger from "./logger.config.js";
 import postgres from "postgres";
 import {PrismaClient} from '../../prisma/generated/prisma/index.js';
 import { POSTGRE_PORT, DATABASE_URL } from "../util/env.util.js";
@@ -10,10 +10,13 @@ const testPostgresConnection = async() => {
         logger.info(`PostgreSQL connected on PORT: ${POSTGRE_PORT}`);
     } catch(e) {
         logger.error(`PostgreSQL connection error: ${e.message}`);
-        process.exit(1);
+        throw e;
     }
 }
-testPostgresConnection();
+await testPostgresConnection().catch(err => {
+    logger.error("Failed to initialize PostgreSQL connection");
+    process.exit(1);
+});
 
 const connectionString = DATABASE_URL;
 

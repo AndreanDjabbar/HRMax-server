@@ -1,6 +1,7 @@
 import { PrismaClient } from "./generated/prisma/index.js";
 import UserRepository from "../src/repository/user.repository.js";
 import logger from "../src/config/logger.config.js";
+import MasterRepository from "../src/repository/master.repository.js";
 
 const prisma = new PrismaClient();
 
@@ -8,6 +9,9 @@ const seed = async () => {
     try {
         await UserRepository.generateUserRoles();
         logger.info("User roles seeded successfully.");
+
+        await MasterRepository.generateCountries();
+        logger.info("Countries seeded successfully.");
     } catch (error) {
         logger.error("Seeding failed:", error);
         process.exit(1);

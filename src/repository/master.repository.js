@@ -31,6 +31,12 @@ class MasterRepository {
             });
         }
     }
+
+    static async getCountryByCountryCode(countryCode) {
+        return await prisma.countries.findUnique({
+            where: { iso_code: countryCode }
+        });
+    }
 }
 
 export default MasterRepository;

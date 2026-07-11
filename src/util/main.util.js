@@ -1,7 +1,14 @@
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import logger from '../config/logger.config.js';
-import { CLIENT_URL, EMAIL, EMAIL_PASSWORD } from './env.util.js';
+import { 
+    CLIENT_URL, 
+    EMAIL, 
+    EMAIL_PASSWORD,
+    EMAIL_HOST,
+    EMAIL_PORT, 
+    NODE_ENV 
+} from './env.util.js';
 
 export const generateOTPNumber = (len = 6) => {
     const characters = '12345678';
@@ -17,13 +24,23 @@ export const generateRandomToken = (len) => {
     return crypto.randomBytes(len).toString("hex");
 }
 
-const transporter = nodemailer.createTransport({
+const transporterConfig = NODE_ENV === 'development' ? {
     service: "gmail",
     auth: {
         user: EMAIL,
         pass: EMAIL_PASSWORD,
     },
-});
+} : {
+    host: EMAIL_HOST,
+    port: EMAIL_PORT,
+    secure: false, // true for 465, false for other ports
+    auth: {
+        user: EMAIL,
+        pass: EMAIL_PASSWORD,
+    },
+}
+
+const transporter = nodemailer.createTransport(transporterConfig);
 
 export const sendVerificationEmail = (email, otpCode) => {
     const subject = "HRMax Email Verification";

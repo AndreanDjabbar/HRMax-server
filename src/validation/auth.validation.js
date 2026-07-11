@@ -1,8 +1,9 @@
 import Joi from "joi";
+import { NODE_ENV } from "../util/env.util.js";
+import { isCorporateEmail } from "../util/auth.util.js";
 
 export const registerSchema = Joi.object({
-    name: Joi
-    .string()
+    name: Joi.string()
     .min(3)
     .max(60)
     .required()
@@ -13,14 +14,24 @@ export const registerSchema = Joi.object({
         'string.max': 'Name should have a maximum length of {#limit}',
         'any.required': 'Name is required',
     }),
-    email: Joi.string().email().required()
+    email: Joi.string()
+    .email()
+    .required()
     .messages({
         'string.base': 'Email must be a string',
         'string.empty': 'Email is required',
         'string.email': 'Email must be a valid email address',
         'any.required': 'Email is required',
+    })
+    .custom((value, helpers) => {
+        if (NODE_ENV === 'production' && !isCorporateEmail(value)) {
+            return helpers.message({ custom: 'Registration requires an official corporate/office email domain.' });
+        }
+        return value;
     }),
-    password: Joi.string().min(6).required()
+    password: Joi.string()
+    .min(6)
+    .required()
     .messages({
         'string.base': 'Password must be a string',
         'string.empty': 'Password is required',
@@ -71,14 +82,18 @@ export const registerSchema = Joi.object({
 })
 
 export const loginSchema = Joi.object({
-    email: Joi.string().email().required()
+    email: Joi.string()
+    .email()
+    .required()
     .messages({
         'string.base': 'Email must be a string',
         'string.empty': 'Email is required',
         'string.email': 'Email must be a valid email address',
         'any.required': 'Email is required',
     }),
-    password: Joi.string().min(6).required()
+    password: Joi.string()
+    .min(6)
+    .required()
     .messages({
         'string.base': 'Password must be a string',
         'string.empty': 'Password is required',
@@ -88,24 +103,36 @@ export const loginSchema = Joi.object({
 })
 
 export const registerOTPCodeSchema = Joi.object({
-    otpCode: Joi.string().length(6).required()
+    otpCode: Joi.string()
+    .length(6)
+    .required()
     .messages({
         'string.base': 'OTP Code must be a string',
         'string.empty': 'OTP Code is required',
         'string.length': 'OTP Code must be exactly {#limit} characters',
         'any.required': 'OTP Code is required',
     }),
-    email: Joi.string().email().required()
+    email: Joi.string()
+    .email()
+    .required()
     .messages({
         'string.base': 'Email must be a string',
         'string.empty': 'Email is required',
         'string.email': 'Email must be a valid email address',
         'any.required': 'Email is required',
+    })
+    .custom((value, helpers) => {
+        if (NODE_ENV === 'production' && !isCorporateEmail(value)) {
+            return helpers.message({ custom: 'Registration requires an official corporate/office email domain.' });
+        }
+        return value;
     }),
 })
 
 export const forgotPasswordEmailSchema = Joi.object({
-    email: Joi.string().email().required()
+    email: Joi.string()
+    .email()
+    .required()
     .messages({
         'string.base': 'Email must be a string',
         'string.empty': 'Email is required',
@@ -115,7 +142,9 @@ export const forgotPasswordEmailSchema = Joi.object({
 })
 
 export const forgotPasswordResetSchema = Joi.object({
-    newPassword: Joi.string().min(6).required()
+    newPassword: Joi.string()
+    .min(6)
+    .required()
     .messages({
         'string.base': 'New Password must be a string',
         'string.empty': 'New Password is required',

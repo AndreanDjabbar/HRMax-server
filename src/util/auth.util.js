@@ -28,3 +28,21 @@ export const auth = betterAuth({
         })
     ]
 })
+
+export const isCorporateEmail = (email) => {
+    if (!email || !email.includes("@")) return false;
+    const domain = email.split("@")[1].toLowerCase();
+    
+    const publicDomains = [
+        'gmail.com',
+        'yahoo.com',
+        'hotmail.com',
+        'outlook.com',
+        'live.com',
+        'icloud.com',
+        'aol.com',
+        'zoho.com'
+    ];
+
+    return !publicDomains.includes(domain);
+}

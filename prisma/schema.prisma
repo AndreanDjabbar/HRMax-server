@@ -19,7 +19,7 @@ model User {
   name          String
   email         String      @unique
   emailVerified Boolean       @default(false) @map("email_verified")
-  role_id       Int       @default(3)
+  role_id       Int       @default(1)
   is_verified   Boolean     @default(false)
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @updatedAt @map("updated_at")

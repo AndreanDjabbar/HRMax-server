@@ -37,7 +37,7 @@ export const verifyRegisterOtpController = async (req, res) => {
     "data",
     {
       name: result.name,
-      role_id: result.role_id,
+      role: result.role?.name,
     }
   );
 };

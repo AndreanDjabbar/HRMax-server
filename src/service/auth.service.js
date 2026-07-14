@@ -8,7 +8,7 @@ import { auth } from "../util/auth.util.js";
 
 class AuthService {
     static async login(email, password) {
-        const user = await UserRepository.getByEmail(email);
+        const user = await UserRepository.getUserByEmail(email);
         if (!user) {
             const error = new Error("User not found");
             error.statusCode = 404;
@@ -20,7 +20,14 @@ class AuthService {
             throw error;
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const account = user.accounts && user.accounts.length > 0 ? user.accounts[0] : null;
+        if (!account || !account.password) {
+            const error = new Error("Account not found or password not set");
+            error.statusCode = 400;
+            throw error;
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, account.password);
         if (!password || !isPasswordValid) {
             const error = new Error("Invalid email or password");
             error.statusCode = 400;
@@ -52,7 +59,7 @@ class AuthService {
         const tokenJWT = generateJWTToken({
             userID: user.id,
             email: user.email,
-            role: user.role
+            role: user.role?.name
         });
 
         const expiresAt = new Date();
@@ -63,8 +70,7 @@ class AuthService {
                 id: user.id,
                 name: user.name,
                 email: user.email,
-                role: user.role,
-                restaurantId: user.restaurant_id
+                role: user.role?.name,
             },
             token: tokenJWT,
         };
@@ -145,7 +151,7 @@ class AuthService {
     }
 
     static async verifyRegisterToken(token, email) {
-        const user = await UserRepository.getByEmail(email);
+        const user = await UserRepository.getUserByEmail(email);
         if (!user) {
             const error = new Error("User not found");
             error.statusCode = 404;
@@ -164,7 +170,7 @@ class AuthService {
     }
 
     static async forgotPasswordEmailVerification(email) {
-        const user = await UserRepository.getByEmail(email);
+        const user = await UserRepository.getUserByEmail(email);
         if (!user) {
             const error = new Error("User not found");
             error.statusCode = 404;
@@ -183,7 +189,7 @@ class AuthService {
     }
 
     static async forgotPasswordLinkVerification(token, email) {
-        const user = await UserRepository.getByEmail(email);
+        const user = await UserRepository.getUserByEmail(email);
         if (!user) {
             const error = new Error("User not found");
             error.statusCode = 404;
@@ -201,7 +207,7 @@ class AuthService {
     }
 
     static async forgotPasswordReset(token, email, newPassword) {
-        const user = await UserRepository.getByEmail(email);
+        const user = await UserRepository.getUserByEmail(email);
         if (!user) {
             const error = new Error("User not found");
             error.statusCode = 404;

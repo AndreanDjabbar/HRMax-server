@@ -23,6 +23,10 @@ class UserRepository {
   static async getUserByEmail(email) {
     return await prisma.user.findUnique({
       where: { email },
+      include: {
+        accounts: true,
+        role: true,
+      },
     });
   }
 

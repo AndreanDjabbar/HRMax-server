@@ -21,6 +21,7 @@ import {
 import validateToken from "../middleware/jwt.middleware.js";
 import validateSchema from "../middleware/schema.middleware.js";
 import catchAsync from "../middleware/catchAsync.middleware.js";
+import protectRoute from "../middleware/authentication.middleware.js";
 import timeout from "connect-timeout";
 import rateLimiter from "../middleware/limiter.middleware.js";
 
@@ -77,10 +78,10 @@ router.post(
     validateToken, 
     catchAsync(logoutController)
 );
-// router.get(
-//     "/verify-jwt-token", 
-//     validateToken, 
-//     catchAsync((req, res) => {return res.status(200).json({status: "success", message: "Token is valid"});})
-// );
+router.get(
+    "/protected", 
+    protectRoute, 
+    catchAsync((req, res) => {return res.status(200).json({status: "success", message: "Token is valid", user: req.user});})
+);
 
 export default router;

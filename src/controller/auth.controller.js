@@ -43,19 +43,17 @@ export const verifyRegisterOtpController = async (req, res) => {
 };
   
 export const loginController = async (req, res) => {
-  const { email, password } = req.body;
-  const result = await AuthService.login(email, password);
-  const token = result.token;
+  const authResult = await AuthService.login(req);
   
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: NODE_ENV === "production",
-    sameSite: "Lax",
-    maxAge: COOKIE_TOKEN_EXPIRES_HOURS * 60 * 60 * 1000,
-  });
-  return responseSuccess(res, 200, "Login successful", "data", {
-    user: result.user,
-  });
+  if (authResult.headers) {
+    authResult.headers.forEach((value, key) => {
+      if (key.toLowerCase() === "set-cookie") {
+        res.append("Set-Cookie", value);
+      }
+    });
+  }
+  const data = await authResult.json();
+  return responseSuccess(res, 200, "Login successful", "data", data);
 };
 
 export const verifyRegisterTokenController = async (req, res) => {

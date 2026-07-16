@@ -7,73 +7,29 @@ import MasterRepository from "../repository/master.repository.js";
 import { auth } from "../util/auth.util.js";
 
 class AuthService {
-    static async login(email, password) {
+    static async login(req) {
+        const { email, password } = req.body;
         const user = await UserRepository.getUserByEmail(email);
         if (!user) {
             const error = new Error("User not found");
             error.statusCode = 404;
             throw error;
         }
-        if (!user.is_verified) {
+        if (!user.is_verified || !user.emailVerified) {
             const error = new Error("User email not verified");
             error.statusCode = 403;
             throw error;
         }
 
-        const account = user.accounts && user.accounts.length > 0 ? user.accounts[0] : null;
-        if (!account || !account.password) {
-            const error = new Error("Account not found or password not set");
-            error.statusCode = 400;
-            throw error;
-        }
-
-        const isPasswordValid = await bcrypt.compare(password, account.password);
-        if (!password || !isPasswordValid) {
-            const error = new Error("Invalid email or password");
-            error.statusCode = 400;
-            throw error;
-        } 
-
-        if (!user.is_verified) {
-            const otpCode = generateOTPNumber();
-            const emailVerificationToken = generateRandomToken(100);
-            const redisKey = `emailVerification:${user.id}`;
-
-            const redisClient = await getRedisClient();
-            await redisClient.del(redisKey);
-            await redisClient.hset(redisKey, {
-                otpCode,
-                emailVerificationToken
-            });
-            await redisClient.expire(redisKey, 5 * 60);
-            sendVerificationEmail(email, emailVerificationToken, otpCode);
-
-            const error = new Error("Email not verified. Please check your email for OTP verification.");
-            error.statusCode = 403;
-            error.data = {
-                token: emailVerificationToken
-            }
-            throw error;
-        }
-
-        const tokenJWT = generateJWTToken({
-            userID: user.id,
-            email: user.email,
-            role: user.role?.name
-        });
-
-        const expiresAt = new Date();
-        expiresAt.setHours(expiresAt.getHours() + 24);
-
-        return {
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                role: user.role?.name,
+        const sessionData = await auth.api.signInEmail({
+            body: {
+                email: email,
+                password: password
             },
-            token: tokenJWT,
-        };
+            headers: req.headers,
+            asResponse: true
+        })
+        return sessionData
     }
 
     static async register(name, email, password, phoneInformation) {

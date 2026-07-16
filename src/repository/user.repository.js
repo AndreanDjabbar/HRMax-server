@@ -30,6 +30,16 @@ class UserRepository {
     });
   }
 
+  static async getUserByID(userID) {
+    return await prisma.user.findUnique({
+      where: { id: userID },
+      include: {
+        accounts: true,
+        role: true,
+      },
+    });
+  }
+
   static async createUserProfile(userId, {
     profileImage=null,
     phoneCountryID,

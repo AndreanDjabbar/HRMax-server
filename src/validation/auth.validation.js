@@ -31,11 +31,13 @@ export const registerSchema = Joi.object({
     }),
     password: Joi.string()
     .min(6)
+    .max(30)
     .required()
     .messages({
         'string.base': 'Password must be a string',
         'string.empty': 'Password is required',
         'string.min': 'Password should have a minimum length of {#limit}',
+        'string.max': 'Password should have a maximum length of {#limit}',
         'any.required': 'Password is required',
     }),
     confirmPassword: Joi.string()
@@ -90,14 +92,22 @@ export const loginSchema = Joi.object({
         'string.empty': 'Email is required',
         'string.email': 'Email must be a valid email address',
         'any.required': 'Email is required',
+    })
+    .custom((value, helpers) => {
+        if (NODE_ENV === 'production' && !isCorporateEmail(value)) {
+            return helpers.message({ custom: 'Registration requires an official corporate/office email domain.' });
+        }
+        return value;
     }),
     password: Joi.string()
     .min(6)
+    .max(30)
     .required()
     .messages({
         'string.base': 'Password must be a string',
         'string.empty': 'Password is required',
         'string.min': 'Password should have a minimum length of {#limit}',
+        'string.max': 'Password should have a maximum length of {#limit}',
         'any.required': 'Password is required',
     }),
 })

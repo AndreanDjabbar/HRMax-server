@@ -1,5 +1,6 @@
 import { responseSuccess, responseError } from "../util/response.util.js";
 import AuthService from "../service/auth.service.js";
+import UserRepository from "../repository/user.repository.js";
 import { COOKIE_TOKEN_EXPIRES_HOURS, NODE_ENV } from "../util/env.util.js";
 
 export const registerController = async (req, res) => {
@@ -53,6 +54,12 @@ export const loginController = async (req, res) => {
     });
   }
   const data = await authResult.json();
+  
+  const dbUser = await UserRepository.getUserByEmail(req.body.email);
+  if (dbUser && dbUser.role && data.user) {
+    data.user.role = dbUser.role.name;
+  }
+
   return responseSuccess(res, 200, "Login successful", "data", data);
 };
 
